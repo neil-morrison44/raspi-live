@@ -17,7 +17,7 @@ if (fs.existsSync(cameraName) === false) {
 let cameraStream = spawn('raspivid', ['-o', '-', '-t', '0', '-n', '-h', '360', '-w', '640']);
 
 // Convert the camera stream to hls
-let conversion = new ffmpeg(cameraStream.stdout).noAudio().format('hls').inputOptions(['-re']).output(`${cameraName}/${cameraName}.m3u8`);
+let conversion = new ffmpeg(cameraStream.stdout).noAudio().format('dash').inputOptions(['-re']).outputOptions(['-b:v 500k']).output(`${cameraName}/${cameraName}.mpd`);
 
 // Set up listeners
 conversion.on('error', function(err, stdout, stderr) {
@@ -45,7 +45,13 @@ app.use(function(req, res, next) {
 
 // Essentially create a file server on the camera directory
 app.get('/camera/:id', (req, res) => {
-  res.set('Content-Type', 'application/x-mpegURL');
+  if (req.params.id === 'camera.mpd') {
+    res.set('Content-Type', 'application/dash+xml');
+  }
+  else {
+    res.set('Content-Type', 'video/mp4');
+  }
+
   let filepath = path.join(__dirname, cameraName, req.params.id);
   let readStream = fs.createReadStream(filepath);
 

@@ -11,6 +11,8 @@
   "dependencies": {
     "cors": "^2.8.4",
     "express": "^4.15.2",
-    "fluent-ffmpeg": "^2.1.0"
+    "fluent-ffmpeg": "^2.1.0",
+    "node-cleanup": "^2.1.2",
+    "node-ramdisk": "^1.2.2"
   }
 }
